@@ -1,0 +1,319 @@
+\documentclass[14pt]{amsart}
+\usepackage{amssymb,cmap,verbatim}
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{subcaption}
+
+
+
+
+\title{About parameters on the SIRD model}
+
+
+\author{Miguel Moreno}
+\address{\textit{Github}:Miguelwan}
+\address{\textit{E-mail}:contact@miguelmath.com}
+\address{\textit{Webpage}:http://miguelmath.com}
+
+
+
+
+\begin{document}
+
+\date{\today}
+
+\maketitle
+
+\section{Introduction}\label{introduction}
+
+In this notebook we use Python to simulate a model of epidemiology, the model that we will use is a simplification of the SIRD model with vaccine. The goal of this notebook is to show how small changes in the parameters may produce big changes in the simulation.
+
+This notebook is to show an example of how mathematics is applied to other fields. It is not a notebook about epidemiology.
+
+\section{Acknowledgment}\label{acknowledgment}
+
+This notebook is based on the implementation of the SIR model made by Francisco Camacho in Platzi.
+
+
+\section{The Model}\label{The Model}
+
+We will work with a SIRD model with vaccination. We will use the following functions in our model:
+\begin{itemize}
+\item $S(t)$ the susceptible people at the time $t$;
+\item $I(t)$ the infected people at the time $t$;
+\item $R(t)$ the recovered people at the time $t$;
+\item $D(t)$ the dead people at the time $t$;
+\item $V(t)$ the vaccinated people at the time $t$.
+\end{itemize}
+
+The model will have the following parameters: 
+\begin{itemize}
+\item $N$ the size of the population;
+\item $\beta$ the infection rate;
+\item $\mu$ the recovery rate;
+\item $\delta$ the mortality rate;
+\item $\nu$ the vaccinating rate.
+\end{itemize}
+
+The model is described by the following equations:
+
+\begin{itemize}
+\item The variation of $S(t)$ is given by the contact between infected and susceptible people, and the vaccinated people:
+    $$\frac{d S}{dt}=-\beta \frac{S(t)I(t)}{N} -\nu S(t).$$
+\item The variation of $I(t)$ is given by the contact between infected and susceptible people, the recovered people, and the death people:
+    $$\frac{d I}{dt}= \beta \frac{S(t)I(t)}{N} -\mu I(t) -\delta I(t).$$
+\item The variation of $R(t)$ is given by $\mu$:
+    $$\frac{d R}{dt}= \mu I(t).$$
+\item The variation of $D(t)$ is given by $\delta$:
+    $$\frac{d D}{dt}= \delta I(t).$$
+\item The variation of $V(t)$ is given by $\nu$:
+    $$\frac{d V}{dt}= \nu S(t).$$
+\end{itemize}
+
+We will study the variation of the parameters of the models. The aim with this study is to understand that the information such as mortality rate of an infectious illness may not be enough to understand the possible damage that the illness may cause.
+
+\section{A not deadly virus}
+
+Let us start by studying the parameters of a not deadly virus. In this case we can assume $\delta = \nu =0$. With these assumptions we can only focus on two parameters $\beta$ and $\mu$ and the relation between them.
+
+In this case, the variation of infected people is given by     
+$$\frac{d I}{dt}= \beta \frac{S(t)I(t)}{N} -\mu I(t).$$
+Therefore, whether $I(t)$ decreases or increases depends on the whether $\frac{d I}{dt}$ is positive, negative or zero. So the infected people will start reducing when $$\beta \frac{S(t)I(t)}{N} -\mu I(t) < 0$$ since $I(0)> 0$ (otherwise the virus cannot infect new people), this is equivalent to 
+\begin{equation}
+\beta \frac{S(t)}{N} < \mu.
+\end{equation}
+
+Therefore $I(t)$ reach the biggest value when $S(t)=\frac{\mu N}{\beta}$. 
+Let us take a close look to this with a population of $N=1000$ and an initial infected individual $I(0)=1$.
+
+In Figure 1 (A) we can see the simulation of the model for the case when $\beta = \mu$, for graphical reasons we set $\beta = 0.3$.
+
+In this case, when $t=2$ the inequality $(1)$ holds. We can see in Figure 1 (A) that the number of infected people stays very close to one. Therefore, there are very few infected people at the same time after $t=2$. This does not mean that new infections are not appearing, what it is telling us is that people are getting infected and recovery at a very similar rate as we can see with the blue and green line.
+It is natural to ask whether the number of infected people will drop to zero before the susceptible number reach zero. To answer this question, we will increase the time of the simulation (see Figure 1 (B)). 
+
+As we can see in Figure 1 (B), the number of recovered people became constant with the time before the susceptible amount reach zero. It is clear that the bigger $\frac{\mu}{\beta}$ is, the faster the recovered people became constant.
+
+In Figure 1 (C) we can see the simulation the case when $\frac{\mu} {\beta} < 1 $. For graphical reasons we set $\beta=0.3$ and $\mu = 0.05$.
+
+It is clear from Figure 1 (C) that the smaller $\frac{\mu}{\beta}$ is, then is the bigger the maximum value of $I(t)$.
+
+Now, by reducing $\beta$ we simulate the reduction on the contacts between infected and susceptible individuals. In Figure 1 (D) we can see the simulation when $\beta$ is reduced to $\beta=0.2$.
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{1.png}
+    \caption{$\mu=\beta=0.3$}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{2.png}
+    \caption{$\mu=\beta=0.3$ time increased}
+  \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{3.png}
+    \caption{$\mu=0.05$ and $\beta=0.3$}
+  \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{4.png}
+    \caption{$\mu=0.05$ and $\beta=0.2$}
+  \end{subfigure}
+  \caption{Simulation of a not deadly virus}
+\end{figure}
+
+As we have seen in this section, when the virus is not deadly, the value of $\frac{\mu}{\beta}$ is the information that determines the highest amount of infected individuals and when the infection of new individuals stops.
+
+From now on we will assume that the values of $\beta$ and $\mu$ are given by $0.3$ and $0.05$ respectively, and $\beta$ can be reduced to $0.2$ to simulate a reduction in the contacts between infected and susceptibles individuals.
+
+\section{A deadly virus without vaccine}
+
+In this section we will study the parameters of a deadly virus, i.e. $\delta \neq 0$. We will assume there is no vaccine for the virus, see next section for $\nu \neq 0$. In this section we will focus on the variation of $\delta$, at first sight we could think that the higher is $\delta$, the more dangerous is the virus, i.e. the the amount of dead individuals will be higher at the end of the simulation.
+
+The first thing we noticed is that the inequality $(1)$ does not apply for the purposes of this section. Let us determine the equivalent of this inequality for this section.
+
+In this case, the variation of infected people is given by     
+$$\frac{d I}{dt}= \beta \frac{S(t)I(t)}{N} -\mu I(t) - \delta I(t).$$
+Therefore, whether $I(t)$ decreases or increases depends on the whether $\frac{d I}{dt}$ is positive, negative or zero. So the infected people will start reducing when $$\beta \frac{S(t)I(t)}{N} -\mu I(t) -\delta I(t)< 0$$ since $I(t)> 0$, this is equivalent to 
+\begin{equation}
+\beta \frac{S(t)}{N} < \mu + \delta.
+\end{equation}
+
+Therefore $I(t)$ reach the biggest value when $S(t)=\frac{N(\mu +\delta)}{\beta}$. 
+Let us take a close look to this with a population of $N=1000$ and an initial infected individual $I(0)=1$.
+
+In Figure 2 (A) we can see the simulation of the model for a mortality rate of $0.075$.
+
+From Figure 2 (A) we can see that at the end of the simulation the amount of dead individuals is over 500. At first sight we can think that if we double $\delta$, then the amount of dead individuals would increase. On the other hand, from the inequality $(2)$ we could conclude that if $\delta$ is double, then the amount of infected individuals starts reducing at an smaller $t$.
+This observation can be explain by the fact that at a higher $\delta$ infected individuals have less time to infect others. On the other hand a smaller $\delta$ implies infected individuals have more time to infect other, but at the same time more time to increase the possibility to recover.
+
+As we can see, it is not clear how the amount of dead individuals changes depending on the variation of $\delta$. To get a better understanding of this relation, let us run a simulation with $\delta=0.04$ and $\delta=0.15$ (see Figure 2 (B) and (C), respectively). 
+
+As we can see in Figure 2 (B) and (C), in both cases the amount of dead individuals at the end of the simulation is smaller than when $\delta=0.75$. In both cases the amount of dead individuals at the end of the simulation is very similar. One of the differences that we can see from Figure 2 (B) and (C) is that when $\delta=0.04$ more people get recovered than when $\delta=0.15$. This means that more individuals got infected when $\delta=0.04$ and at the same time a similar amount of deaths. We conclude that it cannot be determined which case is more dangerous.
+
+Let us assume that the value of $\delta$ is $0.075$. In Figure 2 (D) we can see the simulation when the contacts are reduced, i.e. $\beta=0.2$.
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{5.png}
+    \caption{$\delta=0.075$}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{6.png}
+    \caption{$\delta=0.04$}
+  \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{7.png}
+    \caption{$\delta=0.15$}
+  \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{9.png}
+    \caption{$\delta=0.075$ and $\beta=0.2$}
+  \end{subfigure}
+  \caption{Simulation of a deadly virus without vaccine}
+\end{figure}
+
+As we have seen in this section, when the virus is deadly without a vaccine, the value of $\frac{\mu + \delta}{\beta}$ is the information that determines the highest amount of infected individuals and when the infection of new individuals stops. But not much can be deduced from the variation of $\delta$.
+
+From now on we will assume that the values of $\delta$ is $0.075$.
+
+\section{A deadly virus with vaccination}
+
+In this section we will study the last parameter of our model, i.e. the vaccination rate $\nu \neq 0$. Even though a vaccination campaign is more complicated than only one parameter (effectiveness of the vaccine, speed of the vaccination campaign, etc), we will run a simplification of this by only having one parameter.
+
+The first thing we noticed is that the inequality $(2)$ applies for the purposes of this section. This is because in our model the variation of the infected individuals is not explicitly related to the vaccination rate, the relation between the infected individuals and the vaccination rate comes from the variation of the susceptible individuals. Therefore we will focus on the variation of the susceptible individuals.
+
+In this case, the variation of susceptible people is given by  
+\begin{equation}
+\frac{d S}{dt}= -\beta \frac{S(t)I(t)}{N} -\nu S(t)
+\end{equation}   
+
+It is clear from (3) that $\frac{dS}{dt}$ is always negative unless $S(t)$ is zero, this can be easily seen from the fact that $$-\beta \frac{S(t)I(t)}{N}$$ is never positive and only zero when $S(t)$ or $I(t)$ is zero and $$-\nu S(t)$$ is never positive and only zero when $S(t)$. So $S(t)$ will decrease until it reach zero, it will decrease faster than in the previous case and as a consequence the maximum of $I(t)$ will be smaller than in the previous case.
+
+Let us recall the graphic when $\beta=0.3$, $\mu=0.05$, $\delta=0.075$, and $\nu=0$ (see Figure 3 (A)).
+In Figure 3 (B) we can see the simulation when we set $\nu=0.01$.
+
+As we can see, the reduction on the amount of dead individuals and the infected population is notorious when $\nu=0.01$. Even though $\nu$ is does not appear as a parameter in (2), a small variation on $\nu$ implies a notorious change on the maximum of $I(t)$ and more important on the maximum of $D(t)$. Let us finish by the simulation when the contacts are reduced, i.e. $\beta=0.2$ and the vaccination rate is $0.01$ (see Figure 3 (C)).
+
+\begin{figure}[h!]
+  \centering
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{10.png}
+    \caption{Recall $\nu=0$}
+  \end{subfigure}
+  \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{11.png}
+    \caption{$\nu=0.01$}
+  \end{subfigure}
+    \begin{subfigure}[b]{0.4\linewidth}
+    \includegraphics[width=\linewidth]{12.png}
+    \caption{$\nu=0.01$ and $\beta=0.2$}
+  \end{subfigure}
+  \caption{Simulation of a deadly virus with vaccination}
+\end{figure}
+
+
+
+After running simulations with different values on the parameters, we have seen that small changes on the parameters of the model may imply drastically changes on the simulation. Therefore, it is not possible to make trustable conclusion based on the variation of one parameter. In this notebook we have seen the importance of having the right values of the parameters and trustable data. 
+
+Notice that this is a simple model in which many other parameters have been excluded, for example the natality rate, a segmentation of the population by age, etc.
+
+
+
+\section{Appendix: The code}
+
+The implementation of the model for the simulation was the following.
+
+\noindent \textit{import numpy as np}\\
+\textit{import matplotlib.pylab as plt}\\
+
+
+\noindent \textit{def rk4vec(t0, y0, dt, f):}\\
+\indent \textit{k1 = f(t0, y0)}\\
+\indent \textit{k2 = f(t0 + dt/2.0, y0 + dt * k1 / 2.0)}\\
+\indent \textit{k3 = f(t0 + dt/2.0, y0 + dt * k2 / 2.0)}\\
+\indent \textit{k4 = f(t0 + dt, y0 + dt * k3)}\\
+\indent \textit{y = y0 + (dt/6.0)*(k1 + 2.0*k2 + 2.0*k3 + k4)}\\
+\indent \textit{return y}\\
+
+\noindent \textit{class SIRDV$\_$model():}\\
+
+\noindent \textit{def $\_\_$init$\_\_$(self, init$\_$condition, tmin = 0., tmax = 50., n = 10000, **params):}\\
+
+\textit{self.tmin = tmin}
+
+\textit{self.tmax = tmax}
+
+\textit{self.n = n}
+
+\textit{self.t = np.linspace(self.tmin, self.tmax, self.n)}
+
+\textit{self.dt = self.t[1] - self.t[0]}
+
+\textit{self.S = np.zeros([self.n])}
+
+\textit{self.I = np.zeros([self.n])}
+
+\textit{self.R = np.zeros([self.n])}
+
+\textit{self.D = np.zeros([self.n])}
+
+\textit{self.V = np.zeros([self.n])}
+
+\textit{self.set$\_$params(**params)}
+
+\textit{self.init$\_$condition = init$\_$condition }
+
+\noindent \textit{def set$\_$params(self, beta, mu, delta, nu, max$\_$population):}\\
+
+ 
+\textit{self.beta = beta}
+
+\textit{self.mu =  mu}
+
+\textit{self.delta = delta}
+
+\textit{self.nu = nu}
+
+\textit{self.max$\_$population = max$\_$population}
+
+\noindent \textit{def func(self, t, u):}\\
+
+ 
+\textit{self.uprime = np.zeros$\_$like(u)}
+
+\textit{self.uprime[0] = -self.beta*u[0]*u[1]/max$\_$population-self.nu*u[0]}
+
+\textit{self.uprime[1] = self.beta*u[0]*u[1]/max$\_$population-self.mu*u[1]-self.delta*u[1]}
+
+\textit{self.uprime[2] = self.mu*u[1]}
+
+\textit{self.uprime[3] = self.delta*u[1]}
+
+\textit{self.uprime[4] = self.nu*u[1]}
+
+\textit{return self.uprime}
+
+\noindent \textit{def run$\_$solver(self):}\\
+
+
+\textit{self.u0 = np.array(self.init$\_$condition)}
+
+\textit{self.u1 = np.zeros$\_$like(self.u0)}
+
+\textit{for i in range(self.n):}
+
+\textit{self.S[i] = self.u0[0]}
+
+\textit{self.I[i] = self.u0[1]}
+
+\textit{self.R[i] = self.u0[2]}
+
+\textit{self.D[i] = self.u0[3]}
+
+\textit{self.V[i] = self.u0[4]}
+
+\textit{self.u1 = rk4vec(self.t[i], self.u0, self.dt, self.func)}
+
+\textit{self.u0 = np.copy(self.u1)}
+
+\end{document}
